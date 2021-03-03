@@ -3,7 +3,11 @@
 //
 // When running the script with `hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
-const hre = require("hardhat");
+// const hre = require("hardhat");
+const { ethers } = require("hardhat");
+
+let owner, addr1;
+let tokenAmount = ethers.BigNumber.from(10000000).mul(ethers.BigNumber.from(10).pow(18))
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -14,12 +18,21 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
+  const [owner, addr1] = await ethers.getSigners();
+  
+  const ERC20 = await ethers.getContractFactory("ARGO")
+  const erc20 = await ERC20.deploy(owner.address, tokenAmount, tokenAmount)
 
-  await greeter.deployed();
+  await erc20.deployed()
 
-  console.log("Greeter deployed to:", greeter.address);
+  const ArgoTokenVesting = await ethers.getContractFactory("ArgoTokenVesting");
+  const argoTokenVesting = await ArgoTokenVesting.deploy(
+    erc20.address, addr1.address, [1614904729, 1614905209,1614908209, 1614909044], [15,15,20,50]
+  );
+
+  await argoTokenVesting.deployed();
+
+  console.log("ArgoTokenVesting deployed to:", argoTokenVesting.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0 <0.8.0;
+
 import "hardhat/console.sol";
+
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/math/SafeMath.sol";
 
 /**
  * @dev A token holder contract that will allow a beneficiary to extract the
@@ -13,6 +16,7 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
  */
 contract ArgoTokenVesting {
     using SafeERC20 for IERC20;
+    using SafeMath for uint256;
 
     // ERC20 basic token contract being held
     IERC20 private _token;
@@ -20,6 +24,8 @@ contract ArgoTokenVesting {
     // beneficiary of tokens after they are released
     address private _beneficiary;
 
+    // total balance of tokens sent to contract
+    uint256 totalBalance;
     // timestamp of release date and percent to be released
     struct VestPeriodInfo {
         uint256 releaseTime;
@@ -35,7 +41,7 @@ contract ArgoTokenVesting {
         address beneficiary_,
         uint256[] memory releaseTime_,
         uint256[] memory percent_
-    ) public {
+    ) {
         // solhint-disable-next-line not-rely-on-time
         require(
             percent_.length == releaseTime_.length,
@@ -66,6 +72,7 @@ contract ArgoTokenVesting {
                 })
             );
         }
+        totalBalance = token().balanceOf(address(this));
     }
 
     /**
@@ -106,12 +113,20 @@ contract ArgoTokenVesting {
      */
     function release() public virtual {
         // solhint-disable-next-line not-rely-on-time
-        // require(
-        //     block.timestamp >= releaseTime(),
-        //     "TokenTimelock: current time is before release time"
-        // );
-
-        uint256 amount = token().balanceOf(address(this));
+        uint256 amount;
+        for (uint256 i = 0; i < vestPeriodInfoArray.length; i++) {
+            if (vestPeriodInfoArray[i].releaseTime < block.timestamp) {
+                if (!vestPeriodInfoArray[i].released) {
+                    vestPeriodInfoArray[i].released = true;
+                    amount = vestPeriodInfoArray[i]
+                        .percent
+                        .mul(totalBalance)
+                        .div(100);
+                }
+            } else {
+                break;
+            }
+        }
         require(amount > 0, "TokenTimelock: no tokens to release");
 
         token().safeTransfer(beneficiary(), amount);
