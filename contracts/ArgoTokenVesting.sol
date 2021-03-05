@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @dev A token holder contract that will allow a beneficiary to extract the
@@ -14,7 +15,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
  * Useful for simple vesting schedules like "advisors get all of their tokens
  * after 1 year".
  */
-contract ArgoTokenVesting {
+contract ArgoTokenVesting is ReentrancyGuard {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
