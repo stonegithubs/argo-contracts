@@ -1,7 +1,7 @@
 pragma solidity >=0.6.0 <0.8.0;
 
 import "./ArgoTokenVesting.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -89,7 +89,7 @@ contract ArgoVestingFactory is ReentrancyGuard, Ownable {
         whiteListedAddressMapping[_address].amount = 0;
     }
 
-    function withdraw() public nonReentrant {
+    function withdraw() public {
         require(
             tokenVestingContractMappingStatus[msg.sender],
             "Address not whitelisted"
