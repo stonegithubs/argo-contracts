@@ -6,7 +6,6 @@ import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @dev A token holder contract that will allow a beneficiary to extract the
@@ -15,7 +14,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * Useful for simple vesting schedules like "advisors get all of their tokens
  * after 1 year".
  */
-contract ArgoTokenVesting is ReentrancyGuard {
+contract ArgoTokenVesting {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -56,12 +55,6 @@ contract ArgoTokenVesting is ReentrancyGuard {
             beneficiary_ != address(0),
             "ArgoTokenVesting: beneficiary address should not be zero address"
         );
-        for (uint256 i = 0; i < releaseTime_.length; i++) {
-            require(
-                releaseTime_[i] > block.timestamp,
-                "ArgoTokenVesting: release time is before current time"
-            );
-        }
 
         _token = token_;
         for (uint256 i = 0; i < releaseTime_.length; i++) {
