@@ -25,7 +25,7 @@ async function main() {
 
   await erc20.deployed()
 
-  const ArgoTokenVesting = await ethers.getContractFactory("ArgoVestingFactory");
+  const ArgoTokenVesting = await ethers.getContractFactory("ArgoTokenVesting");
   const argoTokenVesting = await ArgoTokenVesting.deploy(
     erc20.address, addr1.address, [1614904729, 1614905209,1614908209, 1614909044], [15,15,20,50]
   );

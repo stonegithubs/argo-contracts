@@ -89,7 +89,7 @@ contract ArgoVestingFactory is ReentrancyGuard, Ownable {
         whiteListedAddressMapping[_address].amount = 0;
     }
 
-    function withdraw() public {
+    function withdraw() public nonReentrant {
         require(
             tokenVestingContractMappingStatus[msg.sender],
             "Address not whitelisted"
