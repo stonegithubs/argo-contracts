@@ -34,7 +34,7 @@ contract ArgoTokenVesting {
     }
 
     // array of vesting period
-    VestPeriodInfo[] vestPeriodInfoArray;
+    VestPeriodInfo[] public vestPeriodInfoArray;
 
     constructor(
         IERC20 token_,
