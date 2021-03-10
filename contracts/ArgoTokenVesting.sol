@@ -66,6 +66,7 @@ contract ArgoTokenVesting {
                 })
             );
         }
+        _beneficiary = beneficiary_;
         totalBalance = token().balanceOf(address(this));
     }
 
@@ -121,7 +122,7 @@ contract ArgoTokenVesting {
                 break;
             }
         }
-        require(amount > 0, "TokenTimelock: no tokens to release");
+        require(amount == 0, "TokenTimelock: no tokens to release");
 
         token().safeTransfer(beneficiary(), amount);
     }

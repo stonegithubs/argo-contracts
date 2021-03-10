@@ -18,5 +18,27 @@ task("accounts", "Prints the list of accounts", async () => {
  */
 module.exports = {
   solidity: "0.7.3",
+  networks: {
+    hardhat: {
+      // forking: {
+      //   url:
+      //     `https://eth-ropsten.alchemyapi.io/v2/${process.env.ALCHEMY_API_ID}`,
+      // },
+    },
+    localhost: {
+      url: "http://localhost:8545",
+      /*
+        notice no mnemonic here? it will just use account 0 of the buidler node to deploy
+        (you can put in a mnemonic here to set the deployer locally)
+      */
+    },
+    goerli: {
+      url: `https://goerli.infura.io/v3/8b8d0c60bfab43bc8725df20fc660d15`, // <---- YOUR INFURA ID! (or it won't work)
+      accounts: {
+        mnemonic: 'myth like bonus scare over problem client lizard pioneer submit female collect',
+      },
+    },
+    
+  },
 };
 

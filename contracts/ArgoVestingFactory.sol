@@ -5,7 +5,7 @@ import "./ArgoTokenVesting.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ArgoVestingFactory is ReentrancyGuard, Ownable {
+contract ArgoVestingFactory is Ownable {
     using SafeERC20 for IERC20;
 
     event AddressWhitelisted(address indexed beneficiary);
@@ -25,10 +25,10 @@ contract ArgoVestingFactory is ReentrancyGuard, Ownable {
         address deployedVestingAddress;
     }
     //List of percent divisions
-    uint256[] percentList;
+    uint256[] public percentList;
 
     // time difference epochs must be in same sequence as percent division, time will be calculated with current block time + timeDivsions [i]
-    uint256[] epochsToRelease;
+    uint256[] public epochsToRelease;
 
     //mapping of address of their vesting contract with their address
     mapping(address => bool) public tokenVestingContractMappingStatus;

@@ -25,14 +25,14 @@ async function main() {
 
   await erc20.deployed()
 
-  const ArgoTokenVesting = await ethers.getContractFactory("ArgoTokenVesting");
-  const argoTokenVesting = await ArgoTokenVesting.deploy(
-    erc20.address, addr1.address, [1614904729, 1614905209,1614908209, 1614909044], [15,15,20,50]
+  const ArgoVestingFactory = await ethers.getContractFactory("ArgoVestingFactory");
+  const argoVestingFactory = await ArgoVestingFactory.deploy(
+    erc20.address, [owner.address], [10,15, 25, 50], [1614904729, 1614905209,1614908209, 1614909044], [200000]
   );
 
-  await argoTokenVesting.deployed();
+  await argoVestingFactory.deployed();
 
-  console.log("ArgoTokenVesting deployed to:", argoTokenVesting.address);
+  console.log("ArgoVestingFactory deployed to:", argoVestingFactory.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
