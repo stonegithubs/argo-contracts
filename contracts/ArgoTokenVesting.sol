@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @dev A token holder contract that will allow a beneficiary to extract the
@@ -14,7 +15,7 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
  * Useful for simple vesting schedules like "advisors get all of their tokens
  * after 1 year".
  */
-contract ArgoTokenVesting {
+contract ArgoTokenVesting is Ownable {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
@@ -32,7 +33,8 @@ contract ArgoTokenVesting {
         uint256 percent;
         bool released;
     }
-
+    // setTotal balance called
+    bool private setTotalCalled;
     // array of vesting period
     VestPeriodInfo[] public vestPeriodInfoArray;
 
@@ -67,6 +69,14 @@ contract ArgoTokenVesting {
             );
         }
         _beneficiary = beneficiary_;
+    }
+
+    /**
+     * @notice set total erc20 held by contract.
+     */
+    function setTotalBalance() public onlyOwner {
+        require(!setTotalCalled, "this function can be called only once");
+        setTotalCalled = true;
         totalBalance = token().balanceOf(address(this));
     }
 
@@ -110,19 +120,31 @@ contract ArgoTokenVesting {
         // solhint-disable-next-line not-rely-on-time
         uint256 amount;
         for (uint256 i = 0; i < vestPeriodInfoArray.length; i++) {
+            console.log("In first loop");
+            console.log("releaseTime", vestPeriodInfoArray[i].releaseTime);
+            console.log("block.timestamp", block.timestamp);
             if (vestPeriodInfoArray[i].releaseTime < block.timestamp) {
+                console.log("First Condition passed");
                 if (!vestPeriodInfoArray[i].released) {
+                    console.log("Second Condition passed");
                     vestPeriodInfoArray[i].released = true;
-                    amount = vestPeriodInfoArray[i]
-                        .percent
-                        .mul(totalBalance)
-                        .div(100);
+                    amount =
+                        amount +
+                        vestPeriodInfoArray[i].percent.mul(totalBalance).div(
+                            100
+                        );
+                    console.log(
+                        "New Amount added",
+                        vestPeriodInfoArray[i].percent.mul(totalBalance).div(
+                            100
+                        )
+                    );
                 }
             } else {
                 break;
             }
         }
-        require(amount == 0, "TokenTimelock: no tokens to release");
+        require(amount > 0, "TokenTimelock: no tokens to release");
 
         token().safeTransfer(beneficiary(), amount);
     }

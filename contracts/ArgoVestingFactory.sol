@@ -119,6 +119,8 @@ contract ArgoVestingFactory is Ownable {
             whiteListedAddressMapping[msg.sender].amount
         );
 
+        vesting.setTotalBalance();
+
         emit AmountWithdrawn(
             msg.sender,
             address(vesting),
