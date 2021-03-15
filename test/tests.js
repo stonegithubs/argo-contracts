@@ -45,10 +45,8 @@ describe("Test Cases", function() {
       console.log(resultTx["events"][2].args[1])
       argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);
       await ethers.provider.send("evm_setNextBlockTimestamp", [times[0] + 500])
-      
       await ethers.provider.send("evm_mine")
       await argoTokenVesting.connect(second).release();
-      
       console.log((await argoToken.balanceOf(second.address)).toString());
       await ethers.provider.send("evm_setNextBlockTimestamp", [times[1] + 500])
       await ethers.provider.send("evm_mine")

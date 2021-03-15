@@ -75,7 +75,10 @@ contract ArgoTokenVesting is Ownable {
      * @notice set total erc20 held by contract.
      */
     function setTotalBalance() public onlyOwner {
-        require(!setTotalCalled, "this function can be called only once");
+        require(
+            !setTotalCalled,
+            "ArgoTokenVesting: this function can be called only once"
+        );
         setTotalCalled = true;
         totalBalance = token().balanceOf(address(this));
     }
