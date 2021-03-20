@@ -26,7 +26,7 @@ contract ArgoTokenVesting is Ownable {
     address private _beneficiary;
 
     // total balance of tokens sent to contract
-    uint256 totalBalance;
+    uint256 private _totalBalance;
     // timestamp of release date and percent to be released
     struct VestPeriodInfo {
         uint256 releaseTime;
@@ -34,7 +34,7 @@ contract ArgoTokenVesting is Ownable {
         bool released;
     }
     // setTotal balance called
-    bool private setTotalCalled;
+    bool private _setTotalCalled;
     // array of vesting period
     VestPeriodInfo[] public vestPeriodInfoArray;
 
@@ -76,11 +76,11 @@ contract ArgoTokenVesting is Ownable {
      */
     function setTotalBalance() public onlyOwner {
         require(
-            !setTotalCalled,
+            !_setTotalCalled,
             "ArgoTokenVesting: this function can be called only once"
         );
-        setTotalCalled = true;
-        totalBalance = token().balanceOf(address(this));
+        _setTotalCalled = true;
+        _totalBalance = token().balanceOf(address(this));
     }
 
     /**
@@ -88,6 +88,20 @@ contract ArgoTokenVesting is Ownable {
      */
     function token() public view virtual returns (IERC20) {
         return _token;
+    }
+
+    /**
+     * @return the total tokens being held.
+     */
+    function totalBalance() public view virtual returns (uint256) {
+        return _totalBalance;
+    }
+
+    /**
+     * @return the set total being called
+     */
+    function setTotalCalled() public view virtual returns (bool) {
+        return _setTotalCalled;
     }
 
     /**
@@ -123,25 +137,14 @@ contract ArgoTokenVesting is Ownable {
         // solhint-disable-next-line not-rely-on-time
         uint256 amount;
         for (uint256 i = 0; i < vestPeriodInfoArray.length; i++) {
-            console.log("In first loop");
-            console.log("releaseTime", vestPeriodInfoArray[i].releaseTime);
-            console.log("block.timestamp", block.timestamp);
             if (vestPeriodInfoArray[i].releaseTime < block.timestamp) {
-                console.log("First Condition passed");
                 if (!vestPeriodInfoArray[i].released) {
-                    console.log("Second Condition passed");
                     vestPeriodInfoArray[i].released = true;
                     amount =
                         amount +
-                        vestPeriodInfoArray[i].percent.mul(totalBalance).div(
+                        vestPeriodInfoArray[i].percent.mul(_totalBalance).div(
                             100
                         );
-                    console.log(
-                        "New Amount added",
-                        vestPeriodInfoArray[i].percent.mul(totalBalance).div(
-                            100
-                        )
-                    );
                 }
             } else {
                 break;

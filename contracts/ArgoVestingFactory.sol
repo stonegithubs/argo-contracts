@@ -75,9 +75,7 @@ contract ArgoVestingFactory is Ownable {
         for (uint256 i = 0; i < _addressList.length; i++) {
             if (!tokenVestingContractMappingStatus[_addressList[i]]) {
                 tokenVestingContractMappingStatus[_addressList[i]] = true;
-                whiteListedAddressMapping[_addressList[i]].amount = _amountList[
-                    i
-                ];
+                whiteListedAddressMapping[_addressList[i]].amount = _amountList[i];
             }
 
             emit AddressWhitelisted(_addressList[i]);
@@ -85,8 +83,8 @@ contract ArgoVestingFactory is Ownable {
     }
 
     function removeAddressFromWhitelist(address _address) public onlyOwner {
-        tokenVestingContractMappingStatus[_address] = false;
-        whiteListedAddressMapping[_address].amount = 0;
+        delete tokenVestingContractMappingStatus[_address];
+        delete whiteListedAddressMapping[_address];
     }
 
     function withdraw() public {

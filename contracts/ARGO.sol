@@ -22,7 +22,7 @@ contract ARGO is ERC20Capped, Ownable {
      *
      * See {ERC20-_burn}.
      */
-    function burn(uint256 amount) public onlyOwner {
+    function burn(uint256 amount) public {
         _burn(_msgSender(), amount);
     }
 
@@ -46,7 +46,7 @@ contract ARGO is ERC20Capped, Ownable {
      * - the caller must have allowance for ``accounts``'s tokens of at least
      * `amount`.
      */
-    function burnFrom(address account, uint256 amount) public onlyOwner {
+    function burnFrom(address account, uint256 amount) public {
         uint256 decreasedAllowance =
             allowance(account, _msgSender()).sub(
                 amount,
