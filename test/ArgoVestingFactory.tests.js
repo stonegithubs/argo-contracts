@@ -92,6 +92,20 @@ describe("Test Cases", function() {
       expect(tx).to.be.revertedWith("Address not whitelisted");
     })
 
+    it("should revert if user already called withdraw function", async function(){
+      await argoVestingFactory.connect(second).withdraw();
+      const tx =  argoVestingFactory.connect(second).withdraw();
+
+      expect(tx).to.be.revertedWith("Amount already withdrawn by address");
+    })
+
+    it("should revert if withdraw amount is zero", async function(){
+      await argoVestingFactory.addAddressesToWhiteList([third.address], [bnTokens(0)]);
+      const tx =  argoVestingFactory.connect(third).withdraw();
+
+      expect(tx).to.be.revertedWith("Withdraw amount is not set");
+    })
+
     it("should deploy vesting contract if whitelisted address calls and transfer tokens", async function(){
       const tx = await argoVestingFactory.connect(second).withdraw();
       const resultTx = await tx.wait()
@@ -103,5 +117,29 @@ describe("Test Cases", function() {
       const vestingBalance = await argoToken.balanceOf(argoTokenVesting.address);
       expect(vestingBalance).to.be.equal(amounts[1]);
     });
+
+
+    it("should revert if factory is being deployed with unequal length of amounts list and address ", async function(){
+      let _ArgoVestingFactory = await ethers.getContractFactory("ArgoVestingFactory")
+      let _argoVestingFactory =   _ArgoVestingFactory.deploy(argoToken.address, [owner.address], percents, times, amounts);
+      expect(_argoVestingFactory).to.be.revertedWith("Address  and amount should be of equal length");
+    })
+    it("should revert if factory is being deployed with unequal length of epoch list and percent list ", async function(){
+      let _ArgoVestingFactory = await ethers.getContractFactory("ArgoVestingFactory")
+      let times_test = [now * 3600]
+      let _argoVestingFactory =   _ArgoVestingFactory.deploy(argoToken.address, [owner.address, second.address], percents, times_test, amounts);
+      expect(_argoVestingFactory).to.be.revertedWith("Time and percent array length should be same");
+    })
+    it("should revert if factory is being deployed with percent list length zero", async function(){
+      let _ArgoVestingFactory = await ethers.getContractFactory("ArgoVestingFactory")
+      let _argoVestingFactory =   _ArgoVestingFactory.deploy(argoToken.address, [owner.address, second.address], [], times, amounts);
+      expect(_argoVestingFactory).to.be.revertedWith("No percent list provided");
+    })
+    it("should revert if factory is being deployed with address list length zero", async function(){
+      let _ArgoVestingFactory = await ethers.getContractFactory("ArgoVestingFactory")
+      let times_test = [now * 3600]
+      let _argoVestingFactory =   _ArgoVestingFactory.deploy(argoToken.address, [], percents, times_test, amounts);
+      expect(_argoVestingFactory).to.be.revertedWith("No address List provided");
+    })
   })
 });

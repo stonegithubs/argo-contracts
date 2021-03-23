@@ -54,8 +54,8 @@ contract ArgoTokenVesting is Ownable {
             "ArgoTokenVesting: beneficiary address should not be zero address"
         );
         require(
-            beneficiary_ != address(0),
-            "ArgoTokenVesting: beneficiary address should not be zero address"
+            address(token_) != address(0),
+            "ArgoTokenVesting: token address should not be zero address"
         );
 
         _token = token_;
