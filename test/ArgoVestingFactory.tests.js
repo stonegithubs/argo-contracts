@@ -15,7 +15,7 @@ let tokenAmount = ethers.BigNumber.from(10000000).mul(ethers.BigNumber.from(10).
 describe("Test Cases", function() {
   describe("ArgoVestingFactory Test Cases",async function() {
     let now = Math.floor(new Date/1000);
-    let times = [now * 3600, now * 7200]
+    let times = [now + 3600, now + 7200]
     let percents = [40, 60]
     let amounts = [bnTokens(20000), bnTokens(20000)]
 
