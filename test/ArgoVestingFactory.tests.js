@@ -88,26 +88,26 @@ describe("Test Cases", function() {
     });
 
     it("should revert if vesting contract called by account not in whitelist", async function(){
-      const tx = argoVestingFactory.connect(third).withdraw();
+      const tx = argoVestingFactory.connect(third).createVesting();
       expect(tx).to.be.revertedWith("Address not whitelisted");
     })
 
     it("should revert if user already called withdraw function", async function(){
-      await argoVestingFactory.connect(second).withdraw();
-      const tx =  argoVestingFactory.connect(second).withdraw();
+      await argoVestingFactory.connect(second).createVesting();
+      const tx =  argoVestingFactory.connect(second).createVesting();
 
       expect(tx).to.be.revertedWith("Amount already withdrawn by address");
     })
 
     it("should revert if withdraw amount is zero", async function(){
       await argoVestingFactory.addAddressesToWhiteList([third.address], [bnTokens(0)]);
-      const tx =  argoVestingFactory.connect(third).withdraw();
+      const tx =  argoVestingFactory.connect(third).createVesting();
 
       expect(tx).to.be.revertedWith("Withdraw amount is not set");
     })
 
     it("should deploy vesting contract if whitelisted address calls and transfer tokens", async function(){
-      const tx = await argoVestingFactory.connect(second).withdraw();
+      const tx = await argoVestingFactory.connect(second).createVesting();
       const resultTx = await tx.wait()
       let vestingAddress = resultTx.events[2].args[1]
       argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);

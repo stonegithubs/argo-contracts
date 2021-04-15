@@ -4,7 +4,7 @@ pragma solidity >=0.6.0 <0.8.0;
 
 import "hardhat/console.sol";
 
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -16,7 +16,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * after 1 year".
  */
 contract ArgoTokenVesting is Ownable {
-    using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
     // ERC20 basic token contract being held
@@ -26,7 +25,7 @@ contract ArgoTokenVesting is Ownable {
     address private _beneficiary;
 
     // total balance of tokens sent to contract
-    uint256 private _totalBalance;
+    uint256 public _totalBalance;
     // timestamp of release date and percent to be released
     struct VestPeriodInfo {
         uint256 releaseTime;
@@ -38,15 +37,19 @@ contract ArgoTokenVesting is Ownable {
     // array of vesting period
     VestPeriodInfo[] public vestPeriodInfoArray;
 
+    uint256 constant PRECISION = 10**25;
+    uint256 constant PERCENT = 100 * PRECISION;
+
     constructor(
         IERC20 token_,
         address beneficiary_,
-        uint256[] memory releaseTime_,
-        uint256[] memory percent_
+        uint256[] memory releaseTimes_,
+        uint256[] memory percents_,
+        uint256 totalBalance_
     ) {
         // solhint-disable-next-line not-rely-on-time
         require(
-            percent_.length == releaseTime_.length,
+            percents_.length == releaseTimes_.length,
             "ArgoTokenVesting: there should be equal percents and release times values"
         );
         require(
@@ -59,28 +62,17 @@ contract ArgoTokenVesting is Ownable {
         );
 
         _token = token_;
-        for (uint256 i = 0; i < releaseTime_.length; i++) {
+        for (uint256 i = 0; i < releaseTimes_.length; i++) {
             vestPeriodInfoArray.push(
                 VestPeriodInfo({
-                    percent: percent_[i],
-                    releaseTime: releaseTime_[i],
+                    percent: percents_[i],
+                    releaseTime: releaseTimes_[i],
                     released: false
                 })
             );
         }
         _beneficiary = beneficiary_;
-    }
-
-    /**
-     * @notice set total erc20 held by contract.
-     */
-    function setTotalBalance() public onlyOwner {
-        require(
-            !_setTotalCalled,
-            "ArgoTokenVesting: this function can be called only once"
-        );
-        _setTotalCalled = true;
-        _totalBalance = token().balanceOf(address(this));
+        _totalBalance = totalBalance_;
     }
 
     /**
@@ -137,21 +129,23 @@ contract ArgoTokenVesting is Ownable {
         // solhint-disable-next-line not-rely-on-time
         uint256 amount;
         for (uint256 i = 0; i < vestPeriodInfoArray.length; i++) {
-            if (vestPeriodInfoArray[i].releaseTime < block.timestamp) {
-                if (!vestPeriodInfoArray[i].released) {
+            VestPeriodInfo memory vestPeriodInfo = vestPeriodInfoArray[i];
+            if (vestPeriodInfo.releaseTime < block.timestamp) {
+                if (!vestPeriodInfo.released) {
                     vestPeriodInfoArray[i].released = true;
-                    amount =
-                        amount +
-                        vestPeriodInfoArray[i].percent.mul(_totalBalance).div(
-                            100
-                        );
+                    amount = amount.add(
+                        vestPeriodInfo
+                            .percent
+                            .mul(PRECISION)
+                            .mul(_totalBalance)
+                            .div(PERCENT)
+                    );
                 }
             } else {
                 break;
             }
         }
         require(amount > 0, "TokenTimelock: no tokens to release");
-
-        token().safeTransfer(beneficiary(), amount);
+        token().transfer(_beneficiary, amount);
     }
 }

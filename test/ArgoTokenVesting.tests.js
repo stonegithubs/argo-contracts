@@ -33,7 +33,7 @@ describe("Test Cases", function() {
     })
 
     it("should deploy the vesting contract and set state", async function(){
-      const tx = await argoVestingFactory.connect(second).withdraw();
+      const tx = await argoVestingFactory.connect(second).createVesting();
       const resultTx = await tx.wait()
       let vestingAddress = resultTx.events[2].args[1]
       argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);
@@ -55,37 +55,29 @@ describe("Test Cases", function() {
       expect(vestInfoArray2.released).to.equal(false)
     })
 
-    it("should call the setTotalBalance only once by owner", async function(){
-      const tx = await argoVestingFactory.connect(second).withdraw();
-      const resultTx = await tx.wait()
-      let vestingAddress = resultTx.events[2].args[1]
-      argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);
 
-      const tx2 = argoTokenVesting.setTotalBalance();
-      await expect(tx2).to.be.revertedWith("Ownable: caller is not the owner");
-    })
 
     it("should revert if beneficiary address is zero address", async function(){
       ArgoTokenVesting = await ethers.getContractFactory("ArgoTokenVesting")
-      argoTokenVesting =  ArgoTokenVesting.deploy(argoToken.address, "0x0000000000000000000000000000000000000000", times, percents)
+      argoTokenVesting =  ArgoTokenVesting.deploy(argoToken.address, "0x0000000000000000000000000000000000000000", times, percents, bnTokens(10000000))
       await expect(argoTokenVesting).to.be.revertedWith("ArgoTokenVesting: beneficiary address should not be zero address");
     })
 
     it("should revert if times list and percent list are of unequal length", async function(){
       ArgoTokenVesting = await ethers.getContractFactory("ArgoTokenVesting")
       let times_test = [now * 3600]
-      argoTokenVesting =  ArgoTokenVesting.deploy(argoToken.address, second.address, times_test, percents)
+      argoTokenVesting =  ArgoTokenVesting.deploy(argoToken.address, second.address, times_test, percents, bnTokens(10000000))
       await expect(argoTokenVesting).to.be.revertedWith("ArgoTokenVesting: there should be equal percents and release times values");
     })
 
     it("should revert if token is zero address ", async function(){
       ArgoTokenVesting = await ethers.getContractFactory("ArgoTokenVesting")
-      argoTokenVesting =  ArgoTokenVesting.deploy("0x0000000000000000000000000000000000000000", second.address, times, percents)
+      argoTokenVesting =  ArgoTokenVesting.deploy("0x0000000000000000000000000000000000000000", second.address, times, percents, bnTokens(10000000))
       await expect(argoTokenVesting).to.be.revertedWith("ArgoTokenVesting: token address should not be zero address");
     })
 
     it("should withdraw correct amount at given time", async function(){
-      const tx = await argoVestingFactory.connect(second).withdraw();
+      const tx = await argoVestingFactory.connect(second).createVesting();
       const resultTx = await tx.wait()
       let vestingAddress = resultTx.events[2].args[1]
       argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);
