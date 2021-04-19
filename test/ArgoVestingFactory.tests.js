@@ -95,7 +95,6 @@ describe("Test Cases", function() {
     it("should revert if user already called withdraw function", async function(){
       await argoVestingFactory.connect(second).createVesting();
       const tx =  argoVestingFactory.connect(second).createVesting();
-
       expect(tx).to.be.revertedWith("Amount already withdrawn by address");
     })
 

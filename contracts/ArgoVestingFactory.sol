@@ -103,7 +103,7 @@ contract ArgoVestingFactory is Ownable {
             whiteListedAddressInfo.amount > 0,
             "Withdraw amount is not set"
         );
-        whiteListedAddressInfo.withdrawn = true;
+        whiteListedAddressMapping[msg.sender].withdrawn = true;
 
         ArgoTokenVesting vesting =
             new ArgoTokenVesting(
@@ -113,7 +113,9 @@ contract ArgoVestingFactory is Ownable {
                 percentList,
                 whiteListedAddressInfo.amount
             );
-        whiteListedAddressInfo.deployedVestingAddress = address(vesting);
+        whiteListedAddressMapping[msg.sender].deployedVestingAddress = address(
+            vesting
+        );
         IERC20(argoToken).transfer(
             address(vesting),
             whiteListedAddressInfo.amount
