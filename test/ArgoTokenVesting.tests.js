@@ -35,7 +35,7 @@ describe("Test Cases", function() {
     it("should deploy the vesting contract and set state", async function(){
       const tx = await argoVestingFactory.connect(second).createVesting();
       const resultTx = await tx.wait()
-      let vestingAddress = resultTx.events[2].args[1]
+      let vestingAddress = resultTx.events[1].args[1]
       argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);
 
       const token = await argoTokenVesting.token();
@@ -79,7 +79,7 @@ describe("Test Cases", function() {
     it("should withdraw correct amount at given time", async function(){
       const tx = await argoVestingFactory.connect(second).createVesting();
       const resultTx = await tx.wait()
-      let vestingAddress = resultTx.events[2].args[1]
+      let vestingAddress = resultTx.events[1].args[1]
       argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);
       await ethers.provider.send("evm_setNextBlockTimestamp", [times[0] + 500])
       await ethers.provider.send("evm_mine")

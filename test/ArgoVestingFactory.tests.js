@@ -108,7 +108,7 @@ describe("Test Cases", function() {
     it("should deploy vesting contract if whitelisted address calls and transfer tokens", async function(){
       const tx = await argoVestingFactory.connect(second).createVesting();
       const resultTx = await tx.wait()
-      let vestingAddress = resultTx.events[2].args[1]
+      let vestingAddress = resultTx.events[1].args[1]
       argoTokenVesting = await ArgoTokenVesting.attach(vestingAddress);
 
       expect(argoTokenVesting.address).to.be.not.equal(null);

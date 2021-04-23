@@ -2,11 +2,8 @@
 
 pragma solidity >=0.6.0 <0.8.0;
 
-import "hardhat/console.sol";
-
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @dev A token holder contract that will allow a beneficiary to extract the
@@ -15,7 +12,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * Useful for simple vesting schedules like "advisors get all of their tokens
  * after 1 year".
  */
-contract ArgoTokenVesting is Ownable {
+contract ArgoTokenVesting {
     using SafeMath for uint256;
 
     // ERC20 basic token contract being held
@@ -25,15 +22,13 @@ contract ArgoTokenVesting is Ownable {
     address private _beneficiary;
 
     // total balance of tokens sent to contract
-    uint256 public _totalBalance;
+    uint256 public totalBalance;
     // timestamp of release date and percent to be released
     struct VestPeriodInfo {
         uint256 releaseTime;
         uint256 percent;
         bool released;
     }
-    // setTotal balance called
-    bool private _setTotalCalled;
     // array of vesting period
     VestPeriodInfo[] public vestPeriodInfoArray;
 
@@ -72,7 +67,7 @@ contract ArgoTokenVesting is Ownable {
             );
         }
         _beneficiary = beneficiary_;
-        _totalBalance = totalBalance_;
+        totalBalance = totalBalance_;
     }
 
     /**
@@ -80,20 +75,6 @@ contract ArgoTokenVesting is Ownable {
      */
     function token() public view virtual returns (IERC20) {
         return _token;
-    }
-
-    /**
-     * @return the total tokens being held.
-     */
-    function totalBalance() public view virtual returns (uint256) {
-        return _totalBalance;
-    }
-
-    /**
-     * @return the set total being called
-     */
-    function setTotalCalled() public view virtual returns (bool) {
-        return _setTotalCalled;
     }
 
     /**
@@ -137,7 +118,7 @@ contract ArgoTokenVesting is Ownable {
                         vestPeriodInfo
                             .percent
                             .mul(PRECISION)
-                            .mul(_totalBalance)
+                            .mul(totalBalance)
                             .div(PERCENT)
                     );
                 }
