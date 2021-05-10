@@ -22,6 +22,7 @@ async function deployVestingFactory(erc20Address) {
             );
             await argoVestingFactory.deployed();
             console.log(totalAmount);
+            // comment out following two lines if tokens will be transferred later
             var tx = await erc20.transfer(argoVestingFactory.address, totalAmount);
             console.log(tx)
             console.log("ArgoVestingFactory deployed to:", argoVestingFactory.address);
@@ -38,6 +39,7 @@ function convertToWei(eth) {
     return BigNumber.from(eth).mul(BigNumber.from(10).pow(18));
 
 }
+//Pass argo adddress here
 deployVestingFactory("0xef8ad20cea645866cab920d49a08d844834adac6")
     .then(() => process.exit(0))
     .catch(error => {
