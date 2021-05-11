@@ -13,7 +13,7 @@ contract ARGO is ERC20Capped, Ownable {
         address reserve,
         uint256 amount,
         uint256 initialSupply
-    ) ERC20("ARGO Token", "ARGO") ERC20Capped(initialSupply) {
+    ) ERC20("ArGo Token", "ARGO") ERC20Capped(initialSupply) {
         _mint(reserve, amount);
     }
 
