@@ -10,22 +10,28 @@ async function deployVestingFactory(erc20Address) {
         const erc20 = await ERC20.attach(erc20Address);
         for (const key in a) {
             b = a[key];
+            var addresses = []
             var amountList = []
             var totalAmount = BigNumber.from(0);
-            for (let i = 0; i < b.amounts.length; i++) {
-                amountList.push(convertToWei(b.amounts[i]));
-                totalAmount = totalAmount.add(convertToWei(b.amounts[i]));
+            for (let i = 0; i < b.accounts.length; i++) {
+                amountList.push(convertToWei(b.accounts[i].amount));
+                totalAmount = totalAmount.add(convertToWei(b.accounts[i].amount));
             }
+            for (let i = 0; i < b.accounts.length; i++) {
+                addresses.push(b.accounts[i].address);
+            }
+            console.log(addresses)
             const ArgoVestingFactory = await ethers.getContractFactory("ArgoVestingFactory");
             const argoVestingFactory = await ArgoVestingFactory.deploy(
-                erc20Address, b.addresses, b.percents, b.epochs, amountList
+                erc20Address, addresses, b.percents, b.epochs, amountList
             );
             await argoVestingFactory.deployed();
+            console.log("ArgoVestingFactory deployed to:", argoVestingFactory.address);
             console.log(totalAmount);
             // comment out following two lines if tokens will be transferred later
             var tx = await erc20.transfer(argoVestingFactory.address, totalAmount);
-            console.log(tx)
-            console.log("ArgoVestingFactory deployed to:", argoVestingFactory.address);
+            console.log(tx.hash)
+
         }
 
 
