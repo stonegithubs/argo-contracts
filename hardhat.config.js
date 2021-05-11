@@ -38,6 +38,12 @@ module.exports = {
                 mnemonic: 'company loud estate century olive gun tribe pulse bread play addict amount',
             },
         },
+        ethereum: {
+            url: `https://mainnet.infura.io/v3/311ef590f7e5472a90edfa1316248cff`, // <---- YOUR INFURA ID! (or it won't work)
+            accounts: {
+                mnemonic: 'company loud estate century olive gun tribe pulse bread play addict amount',
+            },
+        },
 
     },
 };

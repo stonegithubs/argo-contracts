@@ -15,11 +15,11 @@ async function deployErc20() {
 
     const [owner] = await ethers.getSigners();
 
-    const ERC20 = await ethers.getContractFactory("ArGo")
+    const ERC20 = await ethers.getContractFactory("ARGO")
     erc20 = await ERC20.deploy("0x26b49b322E2B24e028A1f54315fE81976613aB52", initialMint, totalSupply)
 
     await erc20.deployed()
-    console.log("ArGo token deployed to:", erc20.address);
+    console.log("ARGO token deployed to:", erc20.address);
     //transferring ownership to multisig
     erc20.transferOwnership("0x26b49b322E2B24e028A1f54315fE81976613aB52");
 
