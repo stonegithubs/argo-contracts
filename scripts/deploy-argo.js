@@ -6,9 +6,7 @@
 // const hre = require("hardhat");
 const { ethers } = require("hardhat");
 let erc20;
-let owner, addr1;
 let totalSupply = ethers.BigNumber.from(100000000).mul(ethers.BigNumber.from(10).pow(18))
-let initialMint = ethers.BigNumber.from(16479167).mul(ethers.BigNumber.from(10).pow(18))
 
 
 async function deployErc20() {
@@ -17,7 +15,7 @@ async function deployErc20() {
     const [owner] = await ethers.getSigners();
 
     const ERC20 = await ethers.getContractFactory("ARGO")
-    erc20 = await ERC20.deploy(owner.address, initialMint, totalSupply);
+    erc20 = await ERC20.deploy(owner.address, totalSupply, totalSupply);
 
     await erc20.deployed()
     console.log("ARGO token deployed to:", erc20.address);

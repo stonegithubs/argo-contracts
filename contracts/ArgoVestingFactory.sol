@@ -133,4 +133,13 @@ contract ArgoVestingFactory is Ownable {
 
         emit EmergencyWithdraw(owner(), withdrawAmount);
     }
+
+    function emergencyWithdrawERC20(address token, uint256 withdrawAmount)
+        external
+        onlyOwner
+    {
+        IERC20(token).transfer(owner(), withdrawAmount);
+
+        emit EmergencyWithdraw(owner(), withdrawAmount);
+    }
 }

@@ -9,8 +9,7 @@ async function deployVestingFactory(erc20Address) {
     for (let l = 0; l < vestingData.length; l++) {
 
         const a = vestingData[l];
-        const ERC20 = await ethers.getContractFactory("ARGO")
-        const erc20 = await ERC20.attach(erc20Address);
+
         for (const key in a) {
             b = a[key];
             var addresses = []
@@ -28,20 +27,14 @@ async function deployVestingFactory(erc20Address) {
                 erc20Address, addresses, b.percents, b.epochs, amountList
             );
 
-
-
-
-
-
             await argoVestingFactory.deployed();
             console.log("ArgoVestingFactory deployed to:", argoVestingFactory.address);
             var log = { address: argoVestingFactory.address, amount: totalAmount.toString() }
             data.list.push(log);
             // comment out following two lines if tokens will be transferred later
-            var tx = await erc20.transfer(argoVestingFactory.address, totalAmount);
-            console.log("ERC20 Transferred", tx.hash)
-                //var tx2 = await argoVestingFactory.transferOwnership("0x26b49b322E2B24e028A1f54315fE81976613aB52")
-                //console.log("Ownership transferred: ", tx2.hash)
+            //var tx = await erc20.transfer(argoVestingFactory.address, totalAmount);
+            var tx2 = await argoVestingFactory.transferOwnership("0x26b49b322E2B24e028A1f54315fE81976613aB52")
+            console.log("Ownership transferred: ", tx2.hash)
             const abi = [
                 'function constructor(address _argoAddress,address[] memory _addressList,uint256[] memory _percentList,uint256[] memory _epochsToRelease,uint256[] memory _amountList)'
             ]
@@ -67,7 +60,7 @@ function convertToWei(eth) {
 
 }
 //Pass argo adddress here
-deployVestingFactory("0x77f8B5A4aed8631f250784aB8514FE617fC626D9")
+deployVestingFactory("0x28cca76f6e8ec81e4550ecd761f899110b060e97")
     .then(() => process.exit(0))
     .catch(error => {
         console.error(error);

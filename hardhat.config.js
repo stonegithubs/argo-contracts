@@ -1,6 +1,7 @@
 require("@nomiclabs/hardhat-waffle");
 const dotenv = require('dotenv');
 
+
 dotenv.config();
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -42,12 +43,20 @@ module.exports = {
             },
             gasPrice: 400000000000
         },
-        ethereum: {
-            url: `https://mainnet.infura.io/v3/311ef590f7e5472a90edfa1316248cff`, // <---- YOUR INFURA ID! (or it won't work)
+        maticTest: {
+            url: `https://rpc-mumbai.matic.today`, // <---- YOUR INFURA ID! (or it won't work)
             accounts: {
-                mnemonic: process.env.MNEMONIC_ETH,
+                mnemonic: process.env.MNEMONIC_GOERLI,
+
             },
+            gasPrice: 400000000000
         },
+        // ethereum: {
+        //     url: `https://mainnet.infura.io/v3/311ef590f7e5472a90edfa1316248cff`, // <---- YOUR INFURA ID! (or it won't work)
+        //     accounts: {
+        //         mnemonic: process.env.MNEMONIC_ETH,
+        //     },
+        // },
 
     },
 };
